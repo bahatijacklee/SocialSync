@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 262.1 83.3% 57.8%; /* Purple */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 262.1 83.3% 57.8%; /* Purple */
+    --radius: 0.5rem;
+    --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 262.1 83.3% 57.8%; /* Purple */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 262.1 83.3% 57.8%; /* Purple */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    transition: var(--theme-transition);
+  }
+}
+
+/* Gradient backgrounds */
+.gradient-bg-1 {
+  background: linear-gradient(135deg, hsl(262.1, 83.3%, 57.8%), hsl(230, 83.3%, 57.8%));
+}
+
+.gradient-bg-2 {
+  background: linear-gradient(135deg, hsl(262.1, 83.3%, 57.8%), hsl(200, 83.3%, 57.8%));
+}
+
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(135deg, hsl(262.1, 83.3%, 57.8%), hsl(230, 83.3%, 57.8%));
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.card,
+.button,
+.input,
+.dropdown-menu,
+.select,
+.avatar,
+.badge {
+  transition: var(--theme-transition);
+}
+
+/* Dark mode specific styles */
+.dark .gradient-text {
+  background-image: linear-gradient(135deg, hsl(262.1, 83.3%, 67.8%), hsl(230, 83.3%, 67.8%));
+}
+
+.dark .gradient-bg-1 {
+  background: linear-gradient(135deg, hsl(262.1, 83.3%, 47.8%), hsl(230, 83.3%, 47.8%));
+}
+
+.dark .gradient-bg-2 {
+  background: linear-gradient(135deg, hsl(262.1, 83.3%, 47.8%), hsl(200, 83.3%, 47.8%));
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .card {
+    padding: 1rem !important;
+  }
+
+  .grid {
+    gap: 1rem !important;
+  }
+
+  /* Improve touch targets on mobile */
+  button,
+  .button,
+  a,
+  input,
+  select,
+  .dropdown-trigger {
+    min-height: 44px;
+  }
+
+  /* Ensure content doesn't overflow on small screens */
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Improve form elements on mobile */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Improve sheet component for mobile */
+.sheet-content {
+  width: 90vw !important;
+  max-width: 350px !important;
+}
+
+/* Fix for mobile viewport height issues */
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Ensure burger menu is clickable */
+header button {
+  position: relative;
+  z-index: 60 !important;
+}
+
+/* Ensure proper stacking for sheet components */
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
+}
+
