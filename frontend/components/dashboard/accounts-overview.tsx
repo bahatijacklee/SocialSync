@@ -2,8 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import ConnectAccountsModal from "@/components/dashboard/connect-accounts-modal"
 
 const accounts = [
   {
@@ -37,10 +36,9 @@ export function AccountsOverview() {
           <CardTitle>Connected Accounts</CardTitle>
           <CardDescription>Manage your social media accounts</CardDescription>
         </div>
-        <Button size="sm" variant="outline" className="gap-1">
-          <PlusCircle className="h-4 w-4" />
-          Add
-        </Button>
+        <div className="w-40">
+          <ConnectAccountsModal />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

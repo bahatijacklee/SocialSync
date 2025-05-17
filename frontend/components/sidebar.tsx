@@ -16,7 +16,10 @@ import {
   Settings,
   PlusCircle,
   LogOut,
+  Facebook,
+  Youtube,
 } from "lucide-react"
+import ConnectAccountsModal from "@/components/dashboard/connect-accounts-modal"
 
 const routes = [
   {
@@ -101,10 +104,14 @@ export default function Sidebar() {
         </div>
       </ScrollArea>
       <div className="p-4">
-        <Button className="w-full justify-start gap-2">
-          <PlusCircle className="h-4 w-4" />
-          Connect Account
-        </Button>
+        <ConnectAccountsModal
+          extraPlatforms={[
+            { name: "Facebook", icon: Facebook, color: "text-blue-600" },
+            { name: "TikTok", icon: Sparkles, color: "text-black" },
+            { name: "YouTube", icon: Youtube, color: "text-red-600" },
+            { name: "Pinterest", icon: PlusCircle, color: "text-red-500" },
+          ]}
+        />
       </div>
       <div className="p-4 border-t border-border">
         <Button className="w-full justify-start gap-2" variant="ghost" onClick={handleLogout}>

@@ -1,6 +1,28 @@
 const Analytics = require('../models/Analytics');
+const Account = require('../models/Account');
 const jwt = require('jsonwebtoken');
 const twitterService = require('../services/twitterService');
+const linkedinService = require('../services/linkedinService');
+
+// Stub/mock for Instagram analytics
+async function getInstagramAnalytics(account) {
+  // Replace with real API integration later
+  return {
+    followers: 5000,
+    engagement: { likes: 1200, retweets: 0, replies: 300 },
+    impressions: 8000,
+  };
+}
+
+// Stub/mock for LinkedIn analytics
+async function getLinkedInAnalytics(account) {
+  // Replace with real API integration later
+  return {
+    followers: 2000,
+    engagement: { likes: 400, retweets: 0, replies: 100 },
+    impressions: 3000,
+  };
+}
 
 function getUserId(req) {
   const authHeader = req.headers.authorization;
@@ -19,14 +41,55 @@ exports.getOverview = async (req, res) => {
     const userId = getUserId(req);
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // For MVP, we'll use Twitter data
-    // In production, you'd want to aggregate data from all connected accounts
-    const twitterData = await twitterService.getAccountAnalytics(req.query.username || 'elonmusk');
-    
+    // Fetch all connected accounts for the user
+    const accounts = await Account.find({ userId });
+    if (!accounts.length) {
+      return res.json({
+        totalFollowers: 0,
+        engagementRate: 0,
+        impressions: 0,
+        platforms: [],
+      });
+    }
+
+    let totalFollowers = 0;
+    let totalImpressions = 0;
+    let totalEngagement = 0;
+    let engagementDenominator = 0;
+    const platforms = [];
+
+    for (const account of accounts) {
+      let analytics;
+      if (account.platform === 'Twitter') {
+        analytics = await twitterService.getAccountAnalytics(account.username);
+      } else if (account.platform === 'Instagram') {
+        analytics = await getInstagramAnalytics(account);
+      } else if (account.platform === 'LinkedIn') {
+        analytics = await linkedinService.getAccountAnalytics(account);
+      } else {
+        continue; // skip unknown platforms
+      }
+      totalFollowers += analytics.followers;
+      totalImpressions += analytics.impressions;
+      // Engagement rate: (likes + retweets) / followers * 100
+      const engagement = ((analytics.engagement.likes + (analytics.engagement.retweets || 0)) / analytics.followers) * 100;
+      totalEngagement += engagement;
+      engagementDenominator++;
+      platforms.push({
+        platform: account.platform,
+        followers: analytics.followers,
+        impressions: analytics.impressions,
+        engagementRate: engagement.toFixed(1),
+      });
+    }
+
+    const avgEngagementRate = engagementDenominator ? (totalEngagement / engagementDenominator).toFixed(1) : 0;
+
     res.json({
-      totalFollowers: twitterData.followers,
-      engagementRate: ((twitterData.engagement.likes + twitterData.engagement.retweets) / twitterData.followers * 100).toFixed(1),
-      impressions: twitterData.engagement.likes + twitterData.engagement.retweets + twitterData.engagement.replies
+      totalFollowers,
+      engagementRate: avgEngagementRate,
+      impressions: totalImpressions,
+      platforms,
     });
   } catch (error) {
     console.error('Analytics Error:', error);
