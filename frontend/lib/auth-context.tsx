@@ -41,17 +41,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check for stored user data on mount
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      // Fetch profile when user data is loaded
-      refreshProfile();
-    }
-  }, []);
-
   const refreshProfile = async () => {
     if (!user?.token) return;
     try {
@@ -59,15 +48,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(userProfile);
     } catch (error) {
       console.error('Failed to fetch profile:', error);
+      // If token is invalid, log out the user
+      if (error instanceof Error && error.message.includes('unauthorized')) {
+        logout();
+      }
     }
   };
+
+  useEffect(() => {
+    // Check for stored user data on mount
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Failed to parse stored user:', error);
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
+
+  // Refresh profile whenever user changes
+  useEffect(() => {
+    if (user?.token) {
+      refreshProfile();
+    } else {
+      setProfile(null);
+    }
+  }, [user]);
 
   const login = async (email: string, password: string) => {
     try {
       const response = await api.login(email, password);
       setUser(response);
       localStorage.setItem('user', JSON.stringify(response));
-      await refreshProfile();
       router.push('/dashboard');
     } catch (error) {
       throw error;
@@ -79,7 +94,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await api.register(email, password, firstName, lastName);
       setUser(response);
       localStorage.setItem('user', JSON.stringify(response));
-      await refreshProfile();
       router.push('/dashboard');
     } catch (error) {
       throw error;

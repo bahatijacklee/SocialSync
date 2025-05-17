@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bell, Menu, Search, User, Settings, LogOut, HelpCircle } from "lucide-react"
+import { Bell, Menu, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -17,60 +17,35 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useMobile } from "@/hooks/use-mobile"
 import { ThemeToggle } from "@/components/theme-toggle"
 import MobileSidebar from "./mobile-sidebar"
-import Link from "next/link"
+import { UserAvatar } from "./user-avatar"
 
 export default function Header() {
   const isMobile = useMobile()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  const handleLogout = () => {
-    // Redirect to landing page
-    window.location.href = "/landing"
-  }
-
   return (
-    <header className="border-b border-border bg-background z-10">
-      <div className="flex h-16 items-center px-4 md:px-6">
-        {isMobile && (
-          <>
-            <Button variant="ghost" size="icon" className="md:hidden mr-2 z-20" onClick={() => setIsSidebarOpen(true)}>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between">
+        <div className="flex items-center gap-2">
+          {isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSidebarOpen(true)}
+            >
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
             </Button>
-
-            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-              <SheetContent side="left" className="p-0 w-[80%] sm:w-[350px]">
-                <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
-              </SheetContent>
-            </Sheet>
-          </>
-        )}
-
-        <div className="flex-1 flex items-center">
-          {isSearchOpen ? (
-            <div className="relative w-full max-w-md">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full pl-8 bg-[#1E293B] border-[#2D3748]"
-                autoFocus
-                onBlur={() => setIsSearchOpen(false)}
-              />
-            </div>
-          ) : (
-            <>
-              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hidden md:flex">
-                <Search className="h-5 w-5" />
-                <span className="sr-only">Search</span>
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="md:hidden ml-auto">
-                <Search className="h-5 w-5" />
-                <span className="sr-only">Search</span>
-              </Button>
-            </>
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSearchOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -121,55 +96,29 @@ export default function Header() {
                 </div>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="justify-center text-indigo-400">View all notifications</DropdownMenuItem>
+              <DropdownMenuItem className="justify-center text-indigo-400">
+                View all notifications
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <span className="sr-only">Profile</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="flex items-center p-2">
-                <Avatar className="h-10 w-10 mr-2">
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col space-y-0.5">
-                  <p className="text-sm font-medium">John Doe</p>
-                  <p className="text-xs text-muted-foreground">john.doe@example.com</p>
-                </div>
-              </div>
-              <DropdownMenuSeparator />
-              <Link href="/profile">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/settings">
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem>
-                <HelpCircle className="mr-2 h-4 w-4" />
-                <span>Help & Support</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserAvatar />
         </div>
       </div>
+
+      <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+        <SheetContent side="top" className="p-0">
+          <div className="flex h-14 items-center gap-4 border-b px-4">
+            <Search className="h-5 w-5" />
+            <Input
+              placeholder="Search..."
+              className="h-9 flex-1 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <MobileSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
     </header>
   )
 }
